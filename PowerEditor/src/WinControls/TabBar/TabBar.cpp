@@ -896,7 +896,8 @@ void TabBarPlus::drawItem(DRAWITEMSTRUCT *pDrawItemStruct)
 	int nSavedDC = ::SaveDC(hDC);
 
 	::SetBkMode(hDC, TRANSPARENT);
-	HBRUSH hBrush = ::CreateSolidBrush(::GetSysColor(COLOR_BTNFACE));
+	//Active Tab Brush
+	HBRUSH hBrush = ::CreateSolidBrush(RGB(64,64,64));
 	::FillRect(hDC, &rect, hBrush);
 	::DeleteObject((HGDIOBJ)hBrush);
 	
@@ -984,7 +985,7 @@ void TabBarPlus::drawItem(DRAWITEMSTRUCT *pDrawItemStruct)
 	{
 		if (_drawInactiveTab)
 		{
-			hBrush = ::CreateSolidBrush(_inactiveBgColour);
+			hBrush = ::CreateSolidBrush(RGB(43,43,43));
 			::FillRect(hDC, &barRect, hBrush);
 			::DeleteObject((HGDIOBJ)hBrush);
 		}
@@ -1121,7 +1122,8 @@ void TabBarPlus::drawItem(DRAWITEMSTRUCT *pDrawItemStruct)
 		rect.left += spaceUnit;
 	}
 
-	::SetTextColor(hDC, isSelected ? _activeTextColour : _inactiveTextColour);
+	//active:inactive text colors
+	::SetTextColor(hDC, isSelected ? RGB(255,255,255) : _inactiveTextColour);
 
 	::DrawText(hDC, decodedLabel, lstrlen(decodedLabel), &rect, Flags);
 	::RestoreDC(hDC, nSavedDC);
