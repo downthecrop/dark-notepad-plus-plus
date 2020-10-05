@@ -73,7 +73,6 @@ public:
 	virtual void destroy();
 	virtual void init(HINSTANCE hInst, HWND hwnd, bool isVertical = false, bool isMultiLine = false);
 	virtual void reSizeTo(RECT & rc2Ajust);
-	LRESULT runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 	int insertAtEnd(const TCHAR *subTabName);
 	void activateAt(int index) const;
 	void getCurrentTitle(TCHAR *title, int titleLen);
