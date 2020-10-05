@@ -51,6 +51,8 @@ COLORREF TabBarPlus::_activeTopBarUnfocusedColour = RGB(250, 210, 150);
 COLORREF TabBarPlus::_inactiveTextColour = grey;
 COLORREF TabBarPlus::_inactiveBgColour = RGB(192, 192, 192);
 
+const HBRUSH myColor = ::CreateSolidBrush(RGB(64, 64, 64));
+
 HWND TabBarPlus::_hwndArray[nbCtrlMax] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 int TabBarPlus::_nbCtrl = 0;
 
@@ -256,7 +258,6 @@ void TabBar::reSizeTo(RECT & rc2Ajust)
 	}
 }
 
-
 void TabBarPlus::destroy()
 {
 	TabBar::destroy();
@@ -360,6 +361,7 @@ void TabBarPlus::init(HINSTANCE hInst, HWND parent, bool isVertical, bool isMult
 		LogFont.lfWeight = 900;
 		_hVerticalLargeFont = CreateFontIndirect(&LogFont);
 	}
+
 }
 
 
@@ -460,6 +462,10 @@ LRESULT TabBarPlus::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPara
 		{
 			LONG_PTR style = ::GetWindowLongPtr(hwnd, GWL_STYLE);
 
+			//For First draw call --Crop
+			HBRUSH brush = CreateSolidBrush(RGB(64, 64, 64));
+			SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)brush);
+
 			if (wParam > 0)
 				style |= lParam;
 			else
@@ -468,9 +474,9 @@ LRESULT TabBarPlus::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPara
 			_isVertical  = ((style & TCS_VERTICAL) != 0);
 			_isMultiLine = ((style & TCS_MULTILINE) != 0);
 
+
 			::SetWindowLongPtr(hwnd, GWL_STYLE, style);
 			::InvalidateRect(hwnd, NULL, TRUE);
-
 			return TRUE;
 		}
 
@@ -946,11 +952,11 @@ void TabBarPlus::drawItem(DRAWITEMSTRUCT *pDrawItemStruct)
 	{
 		if (_isVertical)
 		{
-			rect.left -= 2;
+		//	rect.left -= 2;
 		}
 		else
 		{
-			rect.top -= 2;
+		//	rect.top -= 2;
 		}
 	}
 
@@ -973,7 +979,7 @@ void TabBarPlus::drawItem(DRAWITEMSTRUCT *pDrawItemStruct)
 			}
 
 			if (::SendMessage(_hParent, NPPM_INTERNAL_ISFOCUSEDTAB, 0, reinterpret_cast<LPARAM>(_hSelf)))
-				hBrush = ::CreateSolidBrush(_activeTopBarFocusedColour); // #FAAA3C
+				hBrush = ::CreateSolidBrush(RGB(0,122,204)); // #FAAA3C
 			else
 				hBrush = ::CreateSolidBrush(_activeTopBarUnfocusedColour); // #FAD296
 
@@ -1044,11 +1050,14 @@ void TabBarPlus::drawItem(DRAWITEMSTRUCT *pDrawItemStruct)
 		else
 		{
 			fromBorder = (rect.bottom - rect.top - (imageRect.bottom - imageRect.top) + 1) / 2;
+			//Remove icon padding
+			fromBorder = -5;
 			yPos = rect.top + fromBorder;
 			xPos = rect.left + fromBorder;
 			rect.left += fromBorder + (imageRect.right - imageRect.left);
 		}
-		ImageList_Draw(hImgLst, tci.iImage, hDC, xPos, yPos, isSelected ? ILD_TRANSPARENT : ILD_SELECTED);
+		//Crop remove save image drawing
+		//ImageList_Draw(hImgLst, tci.iImage, hDC, xPos, yPos, isSelected ? ILD_TRANSPARENT : ILD_SELECTED);
 	}
 
 	// draw text
@@ -1123,6 +1132,7 @@ void TabBarPlus::drawItem(DRAWITEMSTRUCT *pDrawItemStruct)
 	}
 
 	//active:inactive text colors
+	//hDC is the document??
 	::SetTextColor(hDC, isSelected ? RGB(255,255,255) : _inactiveTextColour);
 
 	::DrawText(hDC, decodedLabel, lstrlen(decodedLabel), &rect, Flags);
